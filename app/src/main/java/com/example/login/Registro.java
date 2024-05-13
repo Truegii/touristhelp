@@ -33,7 +33,7 @@ public class Registro extends AppCompatActivity implements View.OnClickListener 
     EditText etnombre, etcorreo, etpassword, etedad;
     Button btn_registrar;
     RequestQueue requestQueue;
-    private static final String URL1 = "192.168.1.37/registrar.php";
+    private static final String URL1 = "http://touristhelp.free.nf/registrar.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,36 +103,5 @@ public class Registro extends AppCompatActivity implements View.OnClickListener 
     }
 
 
-/**
-    @Override
-    public void onClick(View view) {
-        final String name = etnombre.getText().toString();
-        final String correo = etcorreo.getText().toString();
-        final String password = etpassword.getText().toString();
-        final int age = Integer.parseInt(etedad.getText().toString());
 
-        Response.Listener<String> respoListener = new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonResponse = new JSONObject(response);
-                    boolean success = jsonResponse.getBoolean("success");
-                    if (success){
-                        Intent intent = new Intent(Registro.this,MainActivity.class);
-                        Registro.this.startActivity(intent);
-
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(Registro.this);
-                        builder.setMessage("Error de registro")
-                                .setNegativeButton("Retry",null)
-                                .create().show();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        };
-    }
-**/
 }

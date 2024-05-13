@@ -8,56 +8,41 @@
     tools:context=".ui.home.HomeFragment">
 
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-5dp"
+        android:orientation="horizontal">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_costa"
+            app:cornerRadius="0dp"
+            android:height="50dp"
+            android:width="130dp"
+            android:text="Costa">
+        </Button>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        >
-        <TextView
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Bienvenido, "
-            android:textSize="30dp"
-            />
-        <TextView
-            android:id="@+id/tvnombre"
-            android:layout_width="wrap_content"
+            android:id="@+id/btn_sierra"
+            android:width="130dp"
+            android:height="50dp"
+            android:text="Sierra"
+            app:cornerRadius="0dp"></Button>
+
+        <Button
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="30dp"
-            android:text="Usuario"/>
+            android:id="@+id/btn_selva"
+            android:height="50dp"
+            app:cornerRadius="0dp"
+            android:text="Selva">
+        </Button>
+
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Correo:"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:id="@+id/tvcorreo"
-            android:layout_height="wrap_content"
-            android:text="usuario@gmail.com"/>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Edad:"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:id="@+id/tvedad"
-            android:layout_height="wrap_content"
-            android:text="00"/>
-    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -110,6 +95,17 @@
         android:layout_marginTop="25dp"
         android:text="Buscar"/>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/rvback"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RVZonas2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
 
 
 </LinearLayout>

@@ -28,6 +28,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.login.databinding.ActivityMainBinding;
 
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     RequestQueue requestQueue;
     ArrayList<Lugar> listaLugares = new ArrayList<>();
     private Button btnBuscaz;
+    Button btnCosta,btnSierra,btnSelva;
 
     ArrayList<String> departamentosCosta = new ArrayList<>();
     ArrayList<String> departamentosSierra = new ArrayList<>();
@@ -54,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ArrayAdapter adpSelva;
 
-    TextView tv_navnombre, tv_navcorreo, tv_navedad;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,19 +91,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TextView textTitleLabel = header.findViewById(R.id.barnombre);
 
 
-        tv_navcorreo = (TextView) findViewById(R.id.tvnombre);
-        tv_navnombre = (TextView) findViewById(R.id.tvcorreo);
 
         Intent intent = getIntent();
         String nombre = intent.getStringExtra("name");
         String correo = intent.getStringExtra("correo");
         textTitleLabel.setText(correo);
-        tv_navcorreo.setText(nombre);
-        tv_navnombre.setText(correo);
+
         mSpinner = (Spinner) findViewById(R.id.spinreg);
         depas = (Spinner) findViewById(R.id.spindepa);
 
         llenaDatos();
+
+        btnCosta = (Button) findViewById(R.id.btn_costa);
+        btnSierra = (Button) findViewById(R.id.btn_sierra);
+        btnSelva = (Button) findViewById(R.id.btn_selva);
 
         depas.setAdapter(adpCosta);
 
@@ -111,7 +114,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mSpinner.setOnItemSelectedListener(this);
 
         btnBuscaz.setOnClickListener(this);
-
+        btnCosta.setOnClickListener(this);
+        listRegiones("listacosta");
 
 
     }
@@ -162,10 +166,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        String nomdep = depas.getSelectedItem().toString();
 
-        readUser(nomdep);
 
+        if(v.getId() == btnBuscaz.getId()){
+            String nomdep = depas.getSelectedItem().toString();
+            readUser(nomdep);
+        }else if (v.getId() == btnCosta.getId()){
+            listRegiones("listacosta");
+        }else if (v.getId() == btnSierra.getId()){
+
+        }else if (v.getId() == btnSelva.getId()){
+
+        }
 
     }
 
@@ -185,6 +197,54 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    private void listRegiones(String region) {
+
+        String URL1 = "http://192.168.1.37/"+region+".php";
+
+        JsonArrayRequest  request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                listaLugares.clear();
+
+                try{
+
+
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject object = response.getJSONObject(i);
+
+                        String id = object.getString("id");
+                        String nombre = object.getString("nombre");
+                        String descripcion = object.getString("desc");
+                        String imagenurl = object.getString("imgurl");
+                        String depa = object.getString("depa");
+                        String direccion = object.getString("direc");
+                        String calificacion = object.getString("califica");
+
+                        Lugar lugares = new Lugar(id, nombre, descripcion, imagenurl, depa,direccion, calificacion);
+                        listaLugares.add(lugares);
+
+
+                    }
+
+
+                    RecyclerView rvLugares = findViewById(R.id.RVZonas2);
+                    rvLugares.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    rvLugares.setAdapter(new Adaptador(listaLugares, MainActivity.this));
+
+                } catch (JSONException e) {
+                    Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(MainActivity.this,volleyError.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        requestQueue.add(request);
+
+    }
     private void readUser(String depanom) {
 
         String URL1 = "http://192.168.1.37/listazonas.php?depaz=" + depanom;

@@ -29,7 +29,7 @@ public class ListaZonas extends AppCompatActivity {
         ArrayList<Lugar> listaLugares = (ArrayList<Lugar>) intent.getSerializableExtra("lista");
 
 
-        RecyclerView rvLugares = findViewById(R.id.RVZonas);
+        RecyclerView rvLugares = findViewById(R.id.RVZonas1);
         rvLugares.setLayoutManager(new LinearLayoutManager(this));
         rvLugares.setAdapter(new Adaptador(listaLugares, this));
 
