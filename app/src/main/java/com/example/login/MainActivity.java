@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "No Disponible", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .setAnchorView(R.id.fab).show();
             }
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         View header = navigationView.getHeaderView(0);
         TextView textTitleLabel = header.findViewById(R.id.barnombre);
+        TextView textNombreLabel = header.findViewById(R.id.bartexto);
 
 
 
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         String nombre = intent.getStringExtra("name");
         String correo = intent.getStringExtra("correo");
         textTitleLabel.setText(correo);
+        textNombreLabel.setText(nombre);
 
         mSpinner = (Spinner) findViewById(R.id.spinreg);
         depas = (Spinner) findViewById(R.id.spindepa);
@@ -115,6 +117,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         btnBuscaz.setOnClickListener(this);
         btnCosta.setOnClickListener(this);
+        btnSierra.setOnClickListener(this);
+        btnSelva.setOnClickListener(this);
         listRegiones("listacosta");
 
 
@@ -174,9 +178,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }else if (v.getId() == btnCosta.getId()){
             listRegiones("listacosta");
         }else if (v.getId() == btnSierra.getId()){
-
+            listRegiones("listasierra");
         }else if (v.getId() == btnSelva.getId()){
-
+            listRegiones("listaselva");
         }
 
     }
@@ -272,11 +276,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         }
 
-                    Intent intent = new Intent(MainActivity.this, ListaZonas.class);
-                    intent.putExtra("lista", listaLugares);
+                    //Intent intent = new Intent(MainActivity.this, ListaZonas.class);
+                    //intent.putExtra("lista", listaLugares);
 
-                    MainActivity.this.startActivity(intent);
-
+                    //MainActivity.this.startActivity(intent);
+                    RecyclerView rvLugares = findViewById(R.id.RVZonas2);
+                    rvLugares.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    rvLugares.setAdapter(new Adaptador(listaLugares, MainActivity.this));
 
                 } catch (JSONException e) {
                     Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
