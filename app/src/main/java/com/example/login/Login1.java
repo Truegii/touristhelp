@@ -70,7 +70,7 @@ public class Login1 extends AppCompatActivity implements View.OnClickListener {
     }
 
     private void readUser(String cor, String pas) {
-        String URL1 = "http://192.168.1.37/login.php?correo=";
+        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/login.php?correo=";
         URL1 = URL1 + cor + "&password=" + pas;
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,

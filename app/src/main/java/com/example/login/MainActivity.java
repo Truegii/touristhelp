@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ArrayList<String> departamentosSelva = new ArrayList<>();
     ArrayAdapter adpCosta;
     ArrayAdapter adpSierra;
+    RecyclerView rvLugares;
 
     ArrayAdapter adpSelva;
 
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSelva.setOnClickListener(this);
         listRegiones("listacosta");
 
-
+        rvLugares = findViewById(R.id.RVZonas2);
     }
 
     public void llenaDatos(){
@@ -203,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void listRegiones(String region) {
 
-        String URL1 = "http://192.168.1.37/"+region+".php";
+        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/"+region+".php";
 
         JsonArrayRequest  request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
             @Override
@@ -231,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     }
 
 
-                    RecyclerView rvLugares = findViewById(R.id.RVZonas2);
+
                     rvLugares.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                     rvLugares.setAdapter(new Adaptador(listaLugares, MainActivity.this));
 
@@ -251,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
     private void readUser(String depanom) {
 
-        String URL1 = "http://192.168.1.37/listazonas.php?depaz=" + depanom;
+        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/listazonas.php?depaz=" + depanom;
 
         JsonArrayRequest  request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
             @Override
@@ -280,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     //intent.putExtra("lista", listaLugares);
 
                     //MainActivity.this.startActivity(intent);
-                    RecyclerView rvLugares = findViewById(R.id.RVZonas2);
+                    //RecyclerView rvLugares = findViewById(R.id.RVZonas2);
                     rvLugares.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                     rvLugares.setAdapter(new Adaptador(listaLugares, MainActivity.this));
 

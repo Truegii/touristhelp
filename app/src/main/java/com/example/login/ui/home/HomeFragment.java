@@ -14,6 +14,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -21,9 +23,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.login.Adaptador;
 import com.example.login.ListaZonas;
 import com.example.login.Lugar;
 import com.example.login.MainActivity;
+import com.example.login.R;
 import com.example.login.databinding.FragmentHomeBinding;
 
 import org.json.JSONArray;
@@ -60,6 +64,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         binding.spindepa.setAdapter(adpCosta);
         binding.spinreg.setOnItemSelectedListener(this);
         binding.btnBuscaz.setOnClickListener(this);
+        binding.btnCosta.setOnClickListener(this);
+        binding.btnSierra.setOnClickListener(this);
+        binding.btnSelva.setOnClickListener(this);
+        listRegiones("listacosta");
 
         return root;
     }
@@ -120,13 +128,69 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     @Override
     public void onClick(View view) {
-        String nomdep = binding.spindepa.getSelectedItem().toString();
 
-        readUser(nomdep);
+        if(view.getId() == binding.btnBuscaz.getId()){
+            String nomdep = binding.spindepa.getSelectedItem().toString();
+            readUser(nomdep);
+        }else if (view.getId() == binding.btnCosta.getId()){
+            listRegiones("listacosta");
+        }else if (view.getId() == binding.btnSierra.getId()){
+            listRegiones("listasierra");
+        }else if (view.getId() == binding.btnSelva.getId()){
+            listRegiones("listaselva");
+        }
+    }
+    private void listRegiones(String region) {
+
+        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/"+region+".php";
+
+        JsonArrayRequest  request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                listaLugares.clear();
+
+                try{
+
+
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject object = response.getJSONObject(i);
+
+                        String id = object.getString("id");
+                        String nombre = object.getString("nombre");
+                        String descripcion = object.getString("desc");
+                        String imagenurl = object.getString("imgurl");
+                        String depa = object.getString("depa");
+                        String direccion = object.getString("direc");
+                        String calificacion = object.getString("califica");
+
+                        Lugar lugares = new Lugar(id, nombre, descripcion, imagenurl, depa,direccion, calificacion);
+                        listaLugares.add(lugares);
+
+
+                    }
+
+
+
+                    binding.RVZonas2.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    binding.RVZonas2.setAdapter(new Adaptador(listaLugares, getActivity()));
+
+                } catch (JSONException e) {
+                    Toast.makeText(getActivity(),e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getActivity(),volleyError.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        requestQueue.add(request);
+
     }
     private void readUser(String depanom) {
 
-        String URL1 = "http://192.168.1.37/listazonas.php?depaz=" + depanom;
+        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/listazonas.php?depaz=" + depanom;
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
             @Override
@@ -151,10 +215,12 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
                     }
 
-                    Intent intent = new Intent(getActivity(), ListaZonas.class);
-                    intent.putExtra("lista", listaLugares);
+                    binding.RVZonas2.setLayoutManager(new LinearLayoutManager(getActivity()));
+                    binding.RVZonas2.setAdapter(new Adaptador(listaLugares, getActivity()));
 
-                    HomeFragment.this.startActivity(intent);
+
+
+
 
 
                 } catch (JSONException e) {
