@@ -1,12 +1,15 @@
 package com.example.login;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -38,6 +42,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -45,17 +51,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ActivityMainBinding binding;
     private Spinner mSpinner,depas;
     RequestQueue requestQueue;
+    SearchView searchView;
     ArrayList<Lugar> listaLugares = new ArrayList<>();
+    ArrayList<Lugar> listaAll = new ArrayList<>();
+    ArrayList<Lugar> listaItems = new ArrayList<>();
     private Button btnBuscaz;
     Button btnCosta,btnSierra,btnSelva;
-
     ArrayList<String> departamentosCosta = new ArrayList<>();
     ArrayList<String> departamentosSierra = new ArrayList<>();
     ArrayList<String> departamentosSelva = new ArrayList<>();
     ArrayAdapter adpCosta;
     ArrayAdapter adpSierra;
     RecyclerView rvLugares;
-
     ArrayAdapter adpSelva;
 
 
@@ -123,6 +130,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         listRegiones("listacosta");
 
         rvLugares = findViewById(R.id.RVZonas2);
+
+        listaTodo();
+
     }
 
     public void llenaDatos(){
@@ -159,6 +169,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem menuItem = menu.findItem(R.id.itembuscar);
+        searchView = (SearchView) menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                filtrado(s);
+                rvLugares.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                rvLugares.setAdapter(new Adaptador(listaItems, MainActivity.this));
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -168,6 +195,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
+
+
 
     @Override
     public void onClick(View v) {
@@ -204,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void listRegiones(String region) {
 
-        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/"+region+".php";
+        String URL1 = "http://192.168.1.37/"+region+".php";
 
         JsonArrayRequest  request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
             @Override
@@ -250,9 +279,55 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         requestQueue.add(request);
 
     }
+
+    private void listaTodo() {
+
+        String URL1 = "http://192.168.1.37/buscaitem.php";
+
+        JsonArrayRequest  request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                listaAll.clear();
+
+                try{
+
+
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject object = response.getJSONObject(i);
+
+                        String id = object.getString("id");
+                        String nombre = object.getString("nombre");
+                        String descripcion = object.getString("desc");
+                        String imagenurl = object.getString("imgurl");
+                        String depa = object.getString("depa");
+                        String direccion = object.getString("direc");
+                        String calificacion = object.getString("califica");
+
+                        Lugar lugares = new Lugar(id, nombre, descripcion, imagenurl, depa,direccion, calificacion);
+                        listaAll.add(lugares);
+
+                    }
+
+
+                } catch (JSONException e) {
+                    Toast.makeText(MainActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(MainActivity.this,volleyError.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        requestQueue.add(request);
+
+    }
+
+
     private void readUser(String depanom) {
 
-        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/listazonas.php?depaz=" + depanom;
+        String URL1 = "http://192.168.1.37/listazonas.php?depaz=" + depanom;
 
         JsonArrayRequest  request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
             @Override
@@ -277,11 +352,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                         }
 
-                    //Intent intent = new Intent(MainActivity.this, ListaZonas.class);
-                    //intent.putExtra("lista", listaLugares);
-
-                    //MainActivity.this.startActivity(intent);
-                    //RecyclerView rvLugares = findViewById(R.id.RVZonas2);
                     rvLugares.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                     rvLugares.setAdapter(new Adaptador(listaLugares, MainActivity.this));
 
@@ -299,4 +369,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         requestQueue.add(request);
 
     }
+
+
+    public void filtrado(final String busca){
+        int longitud = busca.length();
+        if (longitud==0){
+            listaItems.clear();
+            listaItems.addAll(listaAll);
+        }else {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
+                List<Lugar> lugares = listaItems.stream()
+                        .filter(i -> i.getNombre().toLowerCase().contains(busca.toLowerCase()))
+                        .collect(Collectors.toList());
+                listaItems.clear();
+                listaItems.addAll(lugares);
+            } else{
+                for (Lugar l: listaAll){
+                    if (l.getNombre().toLowerCase().contains(busca.toLowerCase())){
+                        listaItems.add(l);
+                    }
+                }
+            }
+        }
+
+    }
+
 }

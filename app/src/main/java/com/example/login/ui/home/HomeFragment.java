@@ -69,6 +69,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         binding.btnSelva.setOnClickListener(this);
         listRegiones("listacosta");
 
+
+
         return root;
     }
     public void llenaDatos(){
@@ -142,7 +144,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
     private void listRegiones(String region) {
 
-        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/"+region+".php";
+        String URL1 = "http://192.168.1.37/"+region+".php";
 
         JsonArrayRequest  request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
             @Override
@@ -190,7 +192,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     }
     private void readUser(String depanom) {
 
-        String URL1 = "https://6b30-200-121-203-162.ngrok-free.app/listazonas.php?depaz=" + depanom;
+        String URL1 = "http://192.168.1.37/listazonas.php?depaz=" + depanom;
 
         JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, URL1,null, new Response.Listener<JSONArray>() {
             @Override
